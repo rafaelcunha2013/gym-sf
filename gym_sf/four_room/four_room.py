@@ -105,8 +105,13 @@ class FourRoom(gym.Env):
         self.render_flag = render_flag
         self.env_maze = copy.deepcopy(self.maze)
         if self.random_initial_position:
-            for (r, c) in self.initial:
-                self.env_maze[r, c] = ' '
+            for c in range(self.width):
+                for r in range(self.height):
+                    if self.env_maze[r, c] == '_':
+                        self.env_maze[r, c] = ' '
+            # for (r, c) in self.initial:
+            #     self.env_maze[r, c] = ' '
+            #     self.env_maze[12, 0] = ' '
             self.initial = []
             n_r, n_c = np.shape(self.maze)
             initial_position = False
