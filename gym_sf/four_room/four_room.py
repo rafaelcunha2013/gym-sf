@@ -1,4 +1,8 @@
 # -*- coding: UTF-8 -*-
+import gym
+from gym import spaces
+from gym.utils.renderer import Renderer
+
 import numpy as np
 import random
 import copy
@@ -21,7 +25,8 @@ MAZE = np.array([
 REWARDS = dict(zip(['1', '2', '3'], list([1.0, 0.5, -1.0])))
 
 
-class FourRoom:
+class FourRoom(gym.Env):
+
     """
     A discretized version of the gridworld environment introduced in [1]. Here, an agent learns to
     collect shapes with positive reward, while avoid those with negative reward, and then travel to a fixed goal.
@@ -37,6 +42,8 @@ class FourRoom:
     """
 
     LEFT, UP, RIGHT, DOWN = 0, 1, 2, 3
+
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, maze=MAZE, shape_rewards=REWARDS, random_initial_position=True):
         """
@@ -60,7 +67,6 @@ class FourRoom:
         self.my_render = None
         self.random_initial_position = random_initial_position
 
-        # self.action_spaces[agent].n
 
         self.height, self.width = maze.shape
         self.maze = maze
@@ -87,10 +93,15 @@ class FourRoom:
         self.state = None
         self.render_flag = None
 
-    def clone(self):
-        return FourRoom(self.maze, self.shape_rewards)
+        # Variables to fulfill gym env requirements
+        self.action_space = spaces.Discrete(4)
+        self.observation_space = spaces.Box(low=np.zeros(2+len(self.shape_ids)),
+                                            high=len(self.maze)*np.ones(2+len(self.shape_ids)),
+                                            dtype=np.int32)
+        self.reward_space = spaces.Box(low=0, high=1, shape=(3,))
 
-    def initialize(self, render_flag=False):
+    def reset(self, seed=None, options=None, render_flag=False):
+
         self.render_flag = render_flag
         self.env_maze = copy.deepcopy(self.maze)
         if self.random_initial_position:
@@ -109,12 +120,9 @@ class FourRoom:
         # self.state = ((r,c), tuple(0 for _ in range(len(self.shape_ids))))
         # if render_flag:
         #     self.my_render = Render(maze=self.env_maze)
-        return self.state
+        return self.state, {}
 
-    def action_count(self):
-        return 4
-
-    def transition(self, action):
+    def step(self, action):
         (row, col), collected = self.state
         # print(self.state)
         # print(action)
