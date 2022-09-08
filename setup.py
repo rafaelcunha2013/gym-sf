@@ -5,8 +5,11 @@ setup(name='gym-sf',
       description='Environments adapted to the use of successor features',
       author="Rafael F Cunha",
       author_email="rafaelcunha2013@gmail.com",
+      url="https://github.com/rafaelcunha2013/gym-sf",
       python_requires=">=3.8",
       install_requires=['gym==0.25.2',
                         'numpy',
                         'pygame==2.1.2']
       )
+
+# https://www.gymlibrary.dev/content/environment_creation/

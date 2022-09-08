@@ -3,6 +3,7 @@ import gym
 
 # env = gym.make("gym_sf/four-room-v0")
 env = gym.make("gym_sf:gym_sf/four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
+# env = gym.make("four_room:sf-four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
 # env = FourRoom(render_mode='rgb_array')
 terminated = False
 truncated = False

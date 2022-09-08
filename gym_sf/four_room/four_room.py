@@ -3,7 +3,7 @@ import gym
 from gym import spaces
 from gym.utils.renderer import Renderer
 
-from render import Render
+from gym_sf.four_room.render import Render
 import numpy as np
 import random
 import copy
