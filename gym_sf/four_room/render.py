@@ -4,7 +4,6 @@ Render a gridworld environment using the pygame library
 
 import pygame
 import numpy as np
-from gym.utils.renderer import Renderer
 
 
 class Render:
@@ -68,9 +67,6 @@ class Render:
             self.agent_state = [state]
 
         if mode == 'human':
-            # pygame.display.flip()
-            # pygame.time.delay(20)
-
             self.screen.blit(self.canvas, self.canvas.get_rect())
             pygame.event.pump()
             pygame.display.update()
@@ -80,13 +76,8 @@ class Render:
         # This will be the function called by the Renderer to collect a single frame.
         assert mode is not None  # The renderer will not call this function with no-rendering.
 
-        # background image.
-        # self.canvas = pygame.Surface(self.size)
         self.canvas.fill(Render.BLACK)
-        # self.screen.fill(Render.BLACK)
 
-        # --- Drawing code should go here
-        # color = Render.GREEN
         for r in range(self.maze_height):
             for c in range(self.maze_width):
                 color = Render.WHITE
@@ -116,15 +107,6 @@ class Render:
                 elif self.maze[r, c] in {'1'}:
                     color = Render.BLUE
                     self.draw_shape(r, c, color, 'tri')
-
-        # --- Update the content of the entire display
-        # pygame.display.flip()
-
-        # --- Limit to 60 frames per second
-        # clock.tick(60)
-
-        # Close the window and quit.
-        # pygame.quit()
 
         if mode == "human":
             assert self.screen is not None
@@ -164,45 +146,3 @@ class Render:
                                   (self.MARGIN + self.HEIGHT) * r + self.MARGIN + self.HEIGHT - 0.1],
                                  [(self.MARGIN + self.WIDTH) * c + self.MARGIN + self.WIDTH,
                                   (self.MARGIN + self.HEIGHT) * r + self.MARGIN + self.HEIGHT - 0.1]])
-
-
-if __name__ == "__main__":
-    from four_room import FourRoom
-
-    maze = [
-        ['1', ' ', ' ', ' ', ' ', '2', 'X', ' ', ' ', ' ', ' ', ' ', 'G'],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', '1', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
-        ['2', ' ', ' ', ' ', ' ', '3', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
-        ['X', 'X', '3', ' ', 'X', 'X', 'X', 'X', 'X', ' ', '1', 'X', 'X'],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'X', '2', ' ', ' ', ' ', ' ', '3'],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', '2', ' ', ' ', ' ', ' ', ' ', ' '],
-        [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
-        ['_', ' ', ' ', ' ', ' ', ' ', 'X', '3', ' ', ' ', ' ', ' ', '1']]
-    maze = np.array(maze)
-
-    rewards = dict(zip(['1', '2', '3'], list(np.random.uniform(low=-1.0, high=1.0, size=3))))
-    gridworld = FourRoom(maze=maze, shape_rewards=rewards)
-
-    gridworld.reset()
-    my_grid = Render(maze=gridworld.env_maze)
-
-    for _ in range(1000):
-
-        action = np.random.randint(0, 4)
-        if np.random.random() < 0.20:
-            if np.random.random() < 0.50:
-                action = 2
-            else:
-                action = 1
-        next_state, reward, done = gridworld.step(action)
-
-        my_grid.update(next_state[0])
-        if done:
-            gridworld = FourRoom(maze=maze, shape_rewards=rewards)
-            gridworld.reset()
-            my_grid = Render(maze=gridworld.env_maze)
