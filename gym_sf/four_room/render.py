@@ -8,6 +8,7 @@ from gym.utils.renderer import Renderer
 
 
 class Render:
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
     # Define some colors
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -147,7 +148,6 @@ class Render:
         # Close the window and quit.
         # pygame.quit()
 
-
         if mode == "human":
             assert self.screen is not None
             # The following line copies our drawings from `canvas` to the visible window
@@ -157,7 +157,7 @@ class Render:
 
             # We need to ensure that human-rendering occurs at the predefined framerate.
             # The following line will automatically add a delay to keep the framerate stable.
-            self.clock.tick(self.maze.metadata["render_fps"])
+            self.clock.tick(self.metadata["render_fps"])
         else:  # rgb_array or single_rgb_array
             return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2)

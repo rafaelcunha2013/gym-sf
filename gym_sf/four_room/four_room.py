@@ -189,7 +189,7 @@ class FourRoom(gym.Env):
         return self.renderer.get_renders()
 
     def _render_frame(self, mode):
-        self.my_render.render_frame(self, mode=self.render_mode)
+        self.my_render.render_frame(mode=self.render_mode)
         self.my_render.update(self.state[0], mode=self.render_mode)
 
 
