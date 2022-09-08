@@ -2,12 +2,13 @@ import numpy as np
 from four_room import FourRoom
 # from render import Render
 
-env = FourRoom()
+env = FourRoom(render_mode='rgb_array')
 done = False
 env.reset()
+a = []
 
-for _ in range(5000):
-    env.render()
+for _ in range(50):
+    a.append(env.render())
     action = env.action_space.sample()
     if np.random.random() < 0.20:
         if np.random.random() < 0.50:
@@ -18,7 +19,6 @@ for _ in range(5000):
 
     if done:
         env.reset()
-        # print('hi')
-
-
-
+        print('hi')
+env.close()
+print(a)

@@ -71,6 +71,10 @@ class Render:
             pygame.event.pump()
             pygame.display.update()
             self.clock.tick(self.metadata["render_fps"])
+        else:  # rgb_array or single_rgb_array
+            return np.transpose(
+                np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2)
+            )
 
     def render_frame(self, mode='human'):
         # This will be the function called by the Renderer to collect a single frame.

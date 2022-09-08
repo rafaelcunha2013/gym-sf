@@ -180,11 +180,14 @@ class FourRoom(gym.Env):
         # into an empty cell
         return self.state, 0., False
 
-    def render(self, render_mode='human'):
+    def render(self):
         return self.renderer.get_renders()
 
     def _render_frame(self, mode):
-        self.my_render.update(self.state[0], mode=self.render_mode)
+        if mode == 'human':
+            self.my_render.update(self.state[0], mode=self.render_mode)
+        else:  # rgb_array or single_rgb_array
+            return self.my_render.update(self.state[0], mode=self.render_mode)
 
     def close(self):
         if self.render_mode == 'human':
