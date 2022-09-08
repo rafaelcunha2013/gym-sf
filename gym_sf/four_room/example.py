@@ -1,7 +1,5 @@
 import numpy as np
 import gym
-from four_room import FourRoom
-# from render import Render
 
 # env = gym.make("gym_sf/four-room-v0")
 env = gym.make("gym_sf:gym_sf/four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
@@ -10,7 +8,7 @@ terminated = False
 truncated = False
 env.reset()
 
-for _ in range(500):
+for _ in range(50):
     # a.append(env.render())
     env.render()
     action = env.action_space.sample()
