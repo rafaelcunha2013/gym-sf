@@ -161,25 +161,20 @@ class FourRoom(gym.Env):
         s1 = (row, col)
 
         # out of bounds, cannot move
-        if col < 0 or col >= self.width or row < 0 or row >= self.height:
-            pass
-            # return self.state, 0., False
-
-        # into a blocked cell, cannot move
-        # s1 = (row, col)
-        elif s1 in self.occupied:
-            pass
-            # return self.state, 0., False
+        # if col < 0 or col >= self.width or row < 0 or row >= self.height:
+        #     pass
+        #
+        # # into a blocked cell, cannot move
+        # elif s1 in self.occupied:
+        #     pass
 
         # can now move
-        # self.state = (s1, collected)
 
         # into a goal cell
-        elif s1 == self.goal:
+        if s1 == self.goal:
             self.state = (s1, collected)
             reward = 1.
             self.terminated = True
-            # return self.state, 1., True
 
         # into a shape cell
         elif s1 in self.shape_ids:
@@ -187,7 +182,6 @@ class FourRoom(gym.Env):
             if collected[shape_id] == 1:
                 self.state = (s1, collected)
                 # already collected this flag
-                # return self.state, 0., False
             else:
 
                 # collect the new flag
@@ -196,15 +190,16 @@ class FourRoom(gym.Env):
                 collected = tuple(collected)
                 self.state = (s1, collected)
                 reward = self.shape_rewards[self.maze[row, col]]
-                # return self.state, reward, False
         else:
             self.state = (s1, collected)
 
+        if self.step_count == 30:
+            import pygame
+            pygame.image.save(self.my_render.screen, "four-room.jpeg")
         # into an empty cell
         if self.step_count >= self.spec.max_episode_steps:
             self.truncated = True
         return self.state_to_array(self.state), reward, self.terminated, self.truncated, {},
-        # return self.state, 0., False
 
     def render(self):
         return self.renderer.get_renders()
