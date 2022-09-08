@@ -161,17 +161,17 @@ class FourRoom(gym.Env):
         s1 = (row, col)
 
         # out of bounds, cannot move
-        # if col < 0 or col >= self.width or row < 0 or row >= self.height:
-        #     pass
-        #
-        # # into a blocked cell, cannot move
-        # elif s1 in self.occupied:
-        #     pass
+        if col < 0 or col >= self.width or row < 0 or row >= self.height:
+            pass
+
+        # into a blocked cell, cannot move
+        elif s1 in self.occupied:
+            pass
 
         # can now move
 
         # into a goal cell
-        if s1 == self.goal:
+        elif s1 == self.goal:
             self.state = (s1, collected)
             reward = 1.
             self.terminated = True
@@ -195,7 +195,7 @@ class FourRoom(gym.Env):
 
         if self.step_count == 30:
             import pygame
-            pygame.image.save(self.my_render.screen, "four-room.jpeg")
+            pygame.image.save(self.my_render.screen, "four-room2.jpeg")
         # into an empty cell
         if self.step_count >= self.spec.max_episode_steps:
             self.truncated = True
