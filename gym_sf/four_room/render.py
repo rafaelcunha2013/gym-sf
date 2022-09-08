@@ -75,8 +75,13 @@ class Render:
             self.agent_state = [state]
 
         if mode == 'human':
-            pygame.display.flip()
-            pygame.time.delay(20)
+            # pygame.display.flip()
+            # pygame.time.delay(20)
+
+            self.screen.blit(self.canvas, self.canvas.get_rect())
+            pygame.event.pump()
+            pygame.display.update()
+            self.clock.tick(self.metadata["render_fps"])
 
     # def initialize(self):
     #     # Agent state
