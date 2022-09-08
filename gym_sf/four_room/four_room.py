@@ -66,6 +66,9 @@ class FourRoom(gym.Env):
         """
         self.max_num_agents = 1
         self.random_initial_position = random_initial_position
+        self.step_count = None
+        self.terminated = None
+        self.truncated = None
 
         self.height, self.width = maze.shape
         self.maze = maze
@@ -109,7 +112,9 @@ class FourRoom(gym.Env):
         return np.array(s, dtype=np.int32)
 
     def reset(self, seed=None, options=None, render_flag=False, return_info=False):
-
+        self.step_count = 0
+        self.truncated = False
+        self.terminated = False
         self.render_flag = render_flag
         self.env_maze = copy.deepcopy(self.maze)
         if self.random_initial_position:
@@ -135,6 +140,9 @@ class FourRoom(gym.Env):
         return (self.state_to_array(self.state), {}) if return_info else self.state_to_array(self.state)
 
     def step(self, action):
+        reward = 0.
+        self.step_count += 1
+
         self.renderer.render_step()
         (row, col), collected = self.state
 
@@ -150,29 +158,36 @@ class FourRoom(gym.Env):
         else:
             raise Exception('bad action {}'.format(action))
 
+        s1 = (row, col)
+
         # out of bounds, cannot move
         if col < 0 or col >= self.width or row < 0 or row >= self.height:
-            return self.state, 0., False
+            pass
+            # return self.state, 0., False
 
         # into a blocked cell, cannot move
-        s1 = (row, col)
-        if s1 in self.occupied:
-            return self.state, 0., False
+        # s1 = (row, col)
+        elif s1 in self.occupied:
+            pass
+            # return self.state, 0., False
 
         # can now move
-        self.state = (s1, collected)
+        # self.state = (s1, collected)
 
         # into a goal cell
-        if s1 == self.goal:
-            return self.state, 1., True
+        elif s1 == self.goal:
+            self.state = (s1, collected)
+            reward = 1.
+            self.terminated = True
+            # return self.state, 1., True
 
         # into a shape cell
-        if s1 in self.shape_ids:
+        elif s1 in self.shape_ids:
             shape_id = self.shape_ids[s1]
             if collected[shape_id] == 1:
-
+                self.state = (s1, collected)
                 # already collected this flag
-                return self.state, 0., False
+                # return self.state, 0., False
             else:
 
                 # collect the new flag
@@ -181,10 +196,15 @@ class FourRoom(gym.Env):
                 collected = tuple(collected)
                 self.state = (s1, collected)
                 reward = self.shape_rewards[self.maze[row, col]]
-                return self.state, reward, False
+                # return self.state, reward, False
+        else:
+            self.state = (s1, collected)
 
         # into an empty cell
-        return self.state, 0., False
+        if self.step_count >= self.spec.max_episode_steps:
+            self.truncated = True
+        return self.state_to_array(self.state), reward, self.terminated, self.truncated, {},
+        # return self.state, 0., False
 
     def render(self):
         return self.renderer.get_renders()
