@@ -44,9 +44,9 @@ env.close()
 
 ## Environments
 
-| Env                                                                                                                                                                     | Obs/Action spaces | Objectives | Description                                                                                                                                                                                             |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sf-four-room-v0` <br><img src="https://github.com/rafaelcunha2013/gym-sf/blob/c850d64e3e714fd8a4f6ca74677c691884bd487a/gym_sf/four_room/four-room.jpeg" width="200px"> | Discrete / Discrete |  `[item1, item2, item3]` | Agent must collect three different types of items in the map and reach the goal. From [Barreto et al. 2017](https://proceedings.neurips.cc/paper/2017/file/350db081a661525235354dd3e19b8c05-Paper.pdf). |
+| Env                                                                                    | Obs/Action spaces | Objectives | Description                                                                                                                                                                                             |
+|----------------------------------------------------------------------------------------| --- | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sf-four-room-v0` <br><img src="https://github.com/rafaelcunha2013/gym-sf/blob/master/gym_sf/four_room/four-room.jpeg" width="200px"> | Discrete / Discrete |  `[item1, item2, item3]` | Agent must collect three different types of items in the map and reach the goal. From [Barreto et al. 2017](https://proceedings.neurips.cc/paper/2017/file/350db081a661525235354dd3e19b8c05-Paper.pdf). |
 
 
 ## Citing
