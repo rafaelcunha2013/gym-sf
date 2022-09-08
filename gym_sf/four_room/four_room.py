@@ -8,7 +8,6 @@ import numpy as np
 import random
 import copy
 
-# from render import Render
 MAZE = np.array([
     ['1', ' ', ' ', ' ', ' ', '2', 'X', ' ', ' ', ' ', ' ', ' ', 'G'],
     [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -33,7 +32,7 @@ class FourRoom(gym.Env):
     collect shapes with positive reward, while avoid those with negative reward, and then travel to a fixed goal.
     The gridworld is split into four rooms separated by walls with passage-ways.
 
-    # Code adaptaed from: https://github.com/mike-gimelfarb/deep-successor-features-for-transfer/blob/main/source/tasks/gridworld.py
+    # Code adapted from: https://github.com/mike-gimelfarb/deep-successor-features-for-transfer/blob/main/source/tasks/gridworld.py
 
     In this version, a render is implemented and the agent can start at random locations.
 
@@ -49,7 +48,7 @@ class FourRoom(gym.Env):
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
                  render_mode='human', random_initial_position=True):
         """
-        Creates a new instance of the shapes environment.
+        Creates a new instance of the FourRoom environment.
 
         Parameters
         ----------
@@ -71,7 +70,7 @@ class FourRoom(gym.Env):
         self.height, self.width = maze.shape
         self.maze = maze
         self.env_maze = copy.deepcopy(self.maze)
-        self.my_render = None  # Render(maze=self.env_maze)
+        self.my_render = None
         self.shape_rewards = shape_rewards
         shape_types = sorted(list(shape_rewards.keys()))
         self.all_shapes = dict(zip(shape_types, range(len(shape_types))))
@@ -123,22 +122,16 @@ class FourRoom(gym.Env):
                     self.env_maze[r, c] = '_'
                     initial_position = True
         self.state = (random.choice(self.initial), tuple(0 for _ in range(len(self.shape_ids))))
-        # self.state = ((r,c), tuple(0 for _ in range(len(self.shape_ids))))
-        # if render_flag:
-        #     self.my_render = Render(maze=self.env_maze)
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
         self.my_render.render_frame(mode=self.render_mode)
-        self.renderer.render_step()  # I am not sure if this is correct
+        # self.renderer.render_step()
 
         return self.state, {}
 
     def step(self, action):
-        # reward = 0.
-        # done = False
         self.renderer.render_step()
         (row, col), collected = self.state
-        # print(self.state)
-        # print(action)
+
         # perform the movement
         if action == FourRoom.LEFT:
             col -= 1
@@ -191,10 +184,12 @@ class FourRoom(gym.Env):
         return self.renderer.get_renders()
 
     def _render_frame(self, mode):
-        # self.my_render.render_frame(mode=self.render_mode)
         self.my_render.update(self.state[0], mode=self.render_mode)
 
-
-
     def close(self):
-        pass
+        if self.render_mode == 'human':
+            import pygame
+
+            pygame.display.quit()
+            pygame.quit()
+
