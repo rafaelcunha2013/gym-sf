@@ -103,7 +103,12 @@ class FourRoom(gym.Env):
 
         self.renderer = Renderer(self.render_mode, self._render_frame)
 
-    def reset(self, seed=None, options=None, render_flag=False):
+    @staticmethod
+    def state_to_array(state):
+        s = [element for tupl in state for element in tupl]
+        return np.array(s, dtype=np.int32)
+
+    def reset(self, seed=None, options=None, render_flag=False, return_info=False):
 
         self.render_flag = render_flag
         self.env_maze = copy.deepcopy(self.maze)
@@ -126,7 +131,8 @@ class FourRoom(gym.Env):
         self.my_render.render_frame(mode=self.render_mode)
         # self.renderer.render_step()
 
-        return self.state, {}
+        # return self.state, {}
+        return (self.state_to_array(self.state), {}) if return_info else self.state_to_array(self.state)
 
     def step(self, action):
         self.renderer.render_step()
