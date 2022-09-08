@@ -3,6 +3,7 @@ import gym
 from gym import spaces
 from gym.utils.renderer import Renderer
 
+from render import Render
 import numpy as np
 import random
 import copy
@@ -45,7 +46,8 @@ class FourRoom(gym.Env):
 
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
-    def __init__(self, maze=MAZE, shape_rewards=REWARDS, random_initial_position=True):
+    def __init__(self, maze=MAZE, shape_rewards=REWARDS,
+                 render_mode='human', random_initial_position=True):
         """
         Creates a new instance of the shapes environment.
 
@@ -64,13 +66,12 @@ class FourRoom(gym.Env):
             to the agent for collecting an object of that type
         """
         self.max_num_agents = 1
-        self.my_render = None
         self.random_initial_position = random_initial_position
-
 
         self.height, self.width = maze.shape
         self.maze = maze
         self.env_maze = copy.deepcopy(self.maze)
+        self.my_render = None  # Render(maze=self.env_maze)
         self.shape_rewards = shape_rewards
         shape_types = sorted(list(shape_rewards.keys()))
         self.all_shapes = dict(zip(shape_types, range(len(shape_types))))
@@ -92,6 +93,7 @@ class FourRoom(gym.Env):
 
         self.state = None
         self.render_flag = None
+        self.render_mode = render_mode
 
         # Variables to fulfill gym env requirements
         self.action_space = spaces.Discrete(4)
@@ -99,6 +101,8 @@ class FourRoom(gym.Env):
                                             high=len(self.maze)*np.ones(2+len(self.shape_ids)),
                                             dtype=np.int32)
         self.reward_space = spaces.Box(low=0, high=1, shape=(3,))
+
+        self.renderer = Renderer(self.render_mode, self._render_frame)
 
     def reset(self, seed=None, options=None, render_flag=False):
 
@@ -109,9 +113,6 @@ class FourRoom(gym.Env):
                 for r in range(self.height):
                     if self.env_maze[r, c] == '_':
                         self.env_maze[r, c] = ' '
-            # for (r, c) in self.initial:
-            #     self.env_maze[r, c] = ' '
-            #     self.env_maze[12, 0] = ' '
             self.initial = []
             n_r, n_c = np.shape(self.maze)
             initial_position = False
@@ -125,9 +126,14 @@ class FourRoom(gym.Env):
         # self.state = ((r,c), tuple(0 for _ in range(len(self.shape_ids))))
         # if render_flag:
         #     self.my_render = Render(maze=self.env_maze)
+        self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
+        self.renderer.render_step()  # I am not sure if this is correct
         return self.state, {}
 
     def step(self, action):
+        # reward = 0.
+        # done = False
+        self.renderer.render_step()
         (row, col), collected = self.state
         # print(self.state)
         # print(action)
@@ -179,6 +185,14 @@ class FourRoom(gym.Env):
         # into an empty cell
         return self.state, 0., False
 
-    def render(self, obs):
-        if self.render_flag:
-            self.my_render.update(obs)
+    def render(self, render_mode='human'):
+        return self.renderer.get_renders()
+
+    def _render_frame(self, mode):
+        self.my_render.render_frame(self, mode=self.render_mode)
+        self.my_render.update(self.state[0], mode=self.render_mode)
+
+
+
+    def close(self):
+        pass

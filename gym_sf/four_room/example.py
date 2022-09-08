@@ -1,25 +1,24 @@
 import numpy as np
 from four_room import FourRoom
-from render import Render
+# from render import Render
 
-gridworld = FourRoom()
+env = FourRoom()
+done = False
+env.reset()
 
-s0 = gridworld.initialize()
-my_grid = Render(maze=gridworld.env_maze)
-
-for _ in range(1000):
-    action = np.random.randint(0, 4)
+for _ in range(5000):
+    env.render()
+    action = env.action_space.sample()
     if np.random.random() < 0.20:
         if np.random.random() < 0.50:
             action = 2
         else:
             action = 1
-    next_state, reward, done = gridworld.transition(action)
+    next_state, reward, done = env.step(action)
 
-    my_grid.update(next_state[0])
     if done:
-        gridworld = FourRoom()
-        s0 = gridworld.initialize()
-        my_grid = Render(maze=gridworld.env_maze)
+        env.reset()
+        # print('hi')
+
 
 
