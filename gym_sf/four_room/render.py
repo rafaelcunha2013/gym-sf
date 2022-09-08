@@ -8,7 +8,7 @@ from gym.utils.renderer import Renderer
 
 
 class Render:
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 20}
     # Define some colors
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -33,25 +33,18 @@ class Render:
         self.size = (grid_length, grid_length)
         self.screen = None
 
-        # if self.render_mode == 'human':
-        #     import pygame
-        #     self.screen = pygame.display.set_mode(self.size)
         self.agent_state = None
         self.render_mode = render_mode
-        # self.clock = None
-        # self.renderer = None
+
         # Agent state
         self.agent_state = []
+        self.canvas = pygame.Surface(self.size)
         if self.render_mode == 'human':
-            # import pygame
             pygame.init()
             pygame.display.init()
+            pygame.display.set_caption("Four-Room")
             self.screen = pygame.display.set_mode(self.size)
             self.clock = pygame.time.Clock()
-
-        # self.renderer = Renderer(self.render_mode, self._render_frame)
-        # self.initialize()
-        # pygame.time.delay(200)
 
     def update(self, state, mode='human'):
         if isinstance(state[0], tuple):
@@ -83,32 +76,12 @@ class Render:
             pygame.display.update()
             self.clock.tick(self.metadata["render_fps"])
 
-    # def initialize(self):
-    #     # Agent state
-    #     self.agent_state = []
-    #     if self.render_mode == 'human':
-    #         # import pygame
-    #         pygame.init()
-    #         pygame.display.init()
-    #         self.screen = pygame.display.set_mode(self.size)
-    #         self.clock = pygame.time.Clock()
-    #
-    #     self.renderer = Renderer(self.render_mode, self._render_frame)
-
-        # self.screen = pygame.display.set_mode(self.size)
-        # pygame.display.set_caption("GridWorld")
-
-        # Used to manage how fast the screen updates
-        # clock = pygame.time.Clock()
-
     def render_frame(self, mode='human'):
         # This will be the function called by the Renderer to collect a single frame.
         assert mode is not None  # The renderer will not call this function with no-rendering.
 
-        # import pygame  # avoid global pygame dependency. This method is not called with no-render.
-
         # background image.
-        self.canvas = pygame.Surface(self.size)
+        # self.canvas = pygame.Surface(self.size)
         self.canvas.fill(Render.BLACK)
         # self.screen.fill(Render.BLACK)
 

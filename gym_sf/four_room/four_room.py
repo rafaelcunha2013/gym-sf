@@ -127,7 +127,9 @@ class FourRoom(gym.Env):
         # if render_flag:
         #     self.my_render = Render(maze=self.env_maze)
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
+        self.my_render.render_frame(mode=self.render_mode)
         self.renderer.render_step()  # I am not sure if this is correct
+
         return self.state, {}
 
     def step(self, action):
@@ -189,7 +191,7 @@ class FourRoom(gym.Env):
         return self.renderer.get_renders()
 
     def _render_frame(self, mode):
-        self.my_render.render_frame(mode=self.render_mode)
+        # self.my_render.render_frame(mode=self.render_mode)
         self.my_render.update(self.state[0], mode=self.render_mode)
 
 
