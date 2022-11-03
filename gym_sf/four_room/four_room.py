@@ -195,7 +195,7 @@ class FourRoom(gym.Env):
 
         if self.step_count == 30:
             import pygame
-            pygame.image.save(self.my_render.screen, "four-room2.jpeg")
+            pygame.image.save(self.my_render.canvas, "four-room2.jpeg")
         # into an empty cell
         if self.step_count >= self.spec.max_episode_steps:
             self.truncated = True
