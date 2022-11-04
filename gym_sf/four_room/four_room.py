@@ -4,6 +4,7 @@ from gym import spaces
 from gym.utils.renderer import Renderer
 
 from gym_sf.four_room.render import Render
+from gym_sf.four_room.utilities import frame_to_video
 import numpy as np
 import random
 import copy
@@ -46,7 +47,7 @@ class FourRoom(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
-                 render_mode='human', random_initial_position=True):
+                 render_mode='human', random_initial_position=True, video=False):
         """
         Creates a new instance of the FourRoom environment.
 
@@ -96,6 +97,7 @@ class FourRoom(gym.Env):
         self.state = None
         self.render_flag = None
         self.render_mode = render_mode
+        self.video = video
 
         # Variables to fulfill gym env requirements
         self.action_space = spaces.Discrete(4)
@@ -203,6 +205,9 @@ class FourRoom(gym.Env):
 
     def render(self):
         frames = self.renderer.get_renders()
+        if self.video:
+            frame_to_video(frames)
+
         return frames
 
     def _render_frame(self, mode):
