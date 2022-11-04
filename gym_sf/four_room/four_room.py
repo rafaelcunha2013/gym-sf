@@ -202,7 +202,8 @@ class FourRoom(gym.Env):
         return self.state_to_array(self.state), reward, self.terminated, self.truncated, {},
 
     def render(self):
-        return self.renderer.get_renders()
+        frames = self.renderer.get_renders()
+        return frames
 
     def _render_frame(self, mode):
         if mode == 'human':
