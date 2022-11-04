@@ -2,8 +2,8 @@ import numpy as np
 import gym
 import gym_sf
 
-# env = gym.make("four-room-v0", render_mode='rgb_array', new_step_api=True, max_episode_steps=5000, video=True)
-env = gym.make("four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
+env = gym.make("four-room-v0", render_mode='rgb_array', new_step_api=True, max_episode_steps=5000, video=True)
+# env = gym.make("four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
 terminated = False
 truncated = False
 env.reset()
