@@ -11,8 +11,8 @@ class Render:
     # Define some colors
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
+    RED = (0, 255, 0) # GREEN = (0, 255, 0)
+    GREEN = (255, 0, 0) # RED = (255, 0, 0)
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
 
@@ -72,9 +72,9 @@ class Render:
             pygame.display.update()
             self.clock.tick(self.metadata["render_fps"])
         else:  # rgb_array or single_rgb_array
-            return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2)
-            )
+            frame = np.transpose(np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2))
+            frame = np.roll(frame[:, :], 1)
+            return frame
 
     def render_frame(self, mode='human'):
         # This will be the function called by the Renderer to collect a single frame.
@@ -123,9 +123,9 @@ class Render:
             # The following line will automatically add a delay to keep the framerate stable.
             self.clock.tick(self.metadata["render_fps"])
         else:  # rgb_array or single_rgb_array
-            return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2)
-            )
+            frame = np.transpose(np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2))
+            frame = np.roll(frame[:, :], 1)
+            return frame
 
     def draw_shape(self, r, c, color, shape):
         if shape == 'rect':
