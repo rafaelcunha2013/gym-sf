@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 packages = [package for package in find_packages() if package.startswith("gym_sf")]
 
 setup(name='gym-sf',
-      version='0.0.5',
+      version='0.0.6',
       description='Environments adapted to the use of successor features',
       author="Rafael F Cunha",
       author_email="rafaelcunha2013@gmail.com",
@@ -13,7 +13,8 @@ setup(name='gym-sf',
       python_requires=">=3.8",
       install_requires=['gym==0.25.2',
                         'numpy',
-                        'pygame==2.1.2']
+                        'pygame==2.1.2',
+                        'opencv-python>=4.6.0.66']
       )
 
 # https://www.gymlibrary.dev/content/environment_creation/
