@@ -140,7 +140,8 @@ class FourRoom(gym.Env):
         self.state = (random.choice(self.initial), tuple(0 for _ in range(len(self.shape_ids))))
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
         if self.render_mode == "rgb_array_list":
-            self.frames = self.my_render.render_frame(mode=self.render_mode)
+            self.frames = []
+            self.frames.append(self.my_render.render_frame(mode=self.render_mode))
         else:
             self.my_render.render_frame(mode=self.render_mode)
 
