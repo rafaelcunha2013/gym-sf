@@ -145,6 +145,7 @@ class FourRoom(gym.Env):
         reward = 0.
         self.step_count += 1
 
+        # I should get read of this
         self.renderer.render_step()
         (row, col), collected = self.state
 
