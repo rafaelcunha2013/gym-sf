@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import gym
 from gym import spaces
-from gym.utils.renderer import Renderer
 
 from gym_sf.four_room.render import Render
 from gym_sf.four_room.utilities import frame_to_video
@@ -99,6 +98,7 @@ class FourRoom(gym.Env):
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
         self.video = video
+        self.frames = []
 
         # Variables to fulfill gym env requirements
         self.action_space = spaces.Discrete(4)
@@ -114,7 +114,11 @@ class FourRoom(gym.Env):
         s = [element for tupl in state for element in tupl]
         return np.array(s, dtype=np.int32)
 
+    def _get_info(self):
+        return {}
+
     def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
         self.step_count = 0
         self.truncated = False
         self.terminated = False
@@ -135,20 +139,24 @@ class FourRoom(gym.Env):
                     initial_position = True
         self.state = (random.choice(self.initial), tuple(0 for _ in range(len(self.shape_ids))))
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
-        self.my_render.render_frame(mode=self.render_mode)
+        if self.render_mode == "rgb_array_list":
+            self.frames = self.my_render.render_frame(mode=self.render_mode)
+        else:
+            self.my_render.render_frame(mode=self.render_mode)
+
+        info = self._get_info()
 
         if self.render_mode == "human":
-            self._reder_frame()
+            self._render_frame()
+
 
         # return self.state, {}
-        return self.state_to_array(self.state), {}
+        return self.state_to_array(self.state), info
 
     def step(self, action):
         reward = 0.
         self.step_count += 1
 
-        # I should get read of this
-        self.renderer.render_step()
         (row, col), collected = self.state
 
         # perform the movement
@@ -198,26 +206,33 @@ class FourRoom(gym.Env):
         else:
             self.state = (s1, collected)
 
-        # if self.step_count == 30:
-        #     import pygame
-        #     pygame.image.save(self.my_render.canvas, "four-room2.jpeg")
         # into an empty cell
         if self.step_count >= self.spec.max_episode_steps:
             self.truncated = True
-        return self.state_to_array(self.state), reward, self.terminated, self.truncated, {},
+
+        info = self._get_info()
+
+        if self.render_mode == 'human' or self.render_mode == 'rgb_array_list':
+            self._render_frame()
+
+        return self.state_to_array(self.state), reward, self.terminated, self.truncated, info
 
     def render(self):
-        frames = self.renderer.get_renders()
-        if self.video:
-            frame_to_video(frames)
+        if self.render_mode == "rgb_array":
+            return self._render_frame()
 
-        return frames
+        if self.render_mode == "rgb_array_list":
+            if self.video:
+                frame_to_video(self.frames)
+            return self.frames
 
-    def _render_frame(self, mode):
-        if mode == 'human':
+    def _render_frame(self):
+        if self.render_mode == 'human':
             self.my_render.update(self.state[0], mode=self.render_mode)
-        else:  # rgb_array or single_rgb_array
+        elif self.render_mode == 'rgb_array':  # rgb_array or single_rgb_array
             return self.my_render.update(self.state[0], mode=self.render_mode)
+        elif self.render_mode == 'rgb_array_list':
+            self.frames.append(self.my_render.update(self.state[0], mode=self.render_mode))
 
     def close(self):
         if self.render_mode == 'human':
