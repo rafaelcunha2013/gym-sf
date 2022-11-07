@@ -11,9 +11,9 @@ setup(name='gym-sf',
       license='MIT',
       packages=packages,
       python_requires=">=3.8",
-      install_requires=['gym==0.25.2',
+      install_requires=['gym',
                         'numpy',
-                        'pygame==2.1.2',
+                        'pygame>=2.1.2',
                         'opencv-python>=4.6.0.66']
       )
 

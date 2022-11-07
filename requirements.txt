@@ -1,6 +1,6 @@
 opencv-python>=4.6.0.66
 numpy
-gym==0.25.2
+gym
 pygame~=2.1.2
 
 
