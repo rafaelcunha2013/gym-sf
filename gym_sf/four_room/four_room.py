@@ -136,7 +136,7 @@ class FourRoom(gym.Env):
         self.state = (random.choice(self.initial), tuple(0 for _ in range(len(self.shape_ids))))
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
         self.my_render.render_frame(mode=self.render_mode)
-        # self.renderer.render_step()
+        self.renderer.render_step()
 
         # return self.state, {}
         return (self.state_to_array(self.state), {}) if return_info else self.state_to_array(self.state)
