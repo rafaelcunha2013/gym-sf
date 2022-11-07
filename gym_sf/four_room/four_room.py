@@ -44,7 +44,7 @@ class FourRoom(gym.Env):
 
     LEFT, UP, RIGHT, DOWN = 0, 1, 2, 3
 
-    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    metadata = {"render_modes": ["human", "rgb_array", "rgb_array_list"], "render_fps": 4}
 
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
                  render_mode='human', random_initial_position=True, video=False):
@@ -96,6 +96,7 @@ class FourRoom(gym.Env):
 
         self.state = None
         self.render_flag = None
+        assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
         self.video = video
 
@@ -106,18 +107,17 @@ class FourRoom(gym.Env):
                                             dtype=np.int32)
         self.reward_space = spaces.Box(low=0, high=1, shape=(3,))
 
-        self.renderer = Renderer(self.render_mode, self._render_frame)
+        # self.renderer = Renderer(self.render_mode, self._render_frame)
 
     @staticmethod
     def state_to_array(state):
         s = [element for tupl in state for element in tupl]
         return np.array(s, dtype=np.int32)
 
-    def reset(self, seed=None, options=None, render_flag=False, return_info=False):
+    def reset(self, seed=None, options=None):
         self.step_count = 0
         self.truncated = False
         self.terminated = False
-        self.render_flag = render_flag
         self.env_maze = copy.deepcopy(self.maze)
         if self.random_initial_position:
             for c in range(self.width):
@@ -136,10 +136,12 @@ class FourRoom(gym.Env):
         self.state = (random.choice(self.initial), tuple(0 for _ in range(len(self.shape_ids))))
         self.my_render = Render(maze=self.env_maze, render_mode=self.render_mode)
         self.my_render.render_frame(mode=self.render_mode)
-        self.renderer.render_step()
+
+        if self.render_mode == "human":
+            self._reder_frame()
 
         # return self.state, {}
-        return (self.state_to_array(self.state), {}) if return_info else self.state_to_array(self.state)
+        return self.state_to_array(self.state), {}
 
     def step(self, action):
         reward = 0.
