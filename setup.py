@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 packages = [package for package in find_packages() if package.startswith("gym_sf")]
 
 setup(name='gym-sf',
-      version='0.0.6',
+      version='0.1.0',
       description='Environments adapted to the use of successor features',
       author="Rafael F Cunha",
       author_email="rafaelcunha2013@gmail.com",
