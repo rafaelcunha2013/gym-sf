@@ -46,7 +46,8 @@ class FourRoom(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array", "rgb_array_list"], "render_fps": 4}
 
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
-                 render_mode='human', random_initial_position=True, video=False):
+                 render_mode='human', random_initial_position=True, video=False,
+                 video_path='root'):
         """
         Creates a new instance of the FourRoom environment.
 
@@ -98,6 +99,7 @@ class FourRoom(gym.Env):
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
         self.video = video
+        self.video_path = video_path
         self.frames = []
 
         # Variables to fulfill gym env requirements
@@ -224,7 +226,7 @@ class FourRoom(gym.Env):
 
         if self.render_mode == "rgb_array_list":
             if self.video:
-                frame_to_video(self.frames)
+                frame_to_video(self.frames, path=self.video_path)
             return self.frames
 
     def _render_frame(self):
