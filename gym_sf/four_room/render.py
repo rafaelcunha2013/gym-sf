@@ -1,6 +1,7 @@
 """
 Render a gridworld environment using the pygame library
 """
+import copy
 
 import pygame
 import numpy as np
@@ -46,6 +47,8 @@ class Render:
             self.clock = pygame.time.Clock()
 
     def update(self, state, mode='human'):
+        # print(state)
+        # print(self.agent_state)
         if isinstance(state[0], tuple):
             for single_state in self.agent_state:
                 r, c = single_state
@@ -76,7 +79,9 @@ class Render:
             frame = np.roll(frame[:, :], 1)
             return frame
 
-    def render_frame(self, mode='human'):
+    def render_frame(self, mode='human', agent='unique'):
+        if agent != 'unique':
+            self.agent_state = copy.deepcopy(agent)
         # This will be the function called by the Renderer to collect a single frame.
         assert mode is not None  # The renderer will not call this function with no-rendering.
 
@@ -96,7 +101,8 @@ class Render:
                     color = Render.WHITE
                     self.draw_shape(r, c, color, 'rect')
                 elif self.maze[r, c] == '_':
-                    self.agent_state.append((r, c))
+                    if agent == 'unique':
+                        self.agent_state.append((r, c))
                     color = Render.BLUE
                     self.draw_shape(r, c, color, 'circle')
                 elif self.maze[r, c] == 'X':
