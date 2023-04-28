@@ -25,6 +25,27 @@ MAZE = np.array([
     [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', '_', 'X', '3', ' ', ' ', ' ', ' ', '1']])
 REWARDS = dict(zip(['1', '2', '3'], list([1.0, 0.5, -1.0])))
+action_conversion = [('0', [0, 0]),
+                     ('1', [1, 0]),
+                     ('2', [2, 0]),
+                     ('3', [3, 0]),
+                     ('4', [0, 1]),
+                     ('5', [1, 1]),
+                     ('6', [2, 1]),
+                     ('7', [3, 1]),
+                     ('8', [0, 2]),
+                     ('9', [1, 2]),
+                     ('10', [2, 2]),
+                     ('11', [3, 2]),
+                     ('12', [0, 3]),
+                     ('13', [1, 3]),
+                     ('14', [2, 3]),
+                     ('15', [3, 3])]
+action_dict = dict(action_conversion)
+
+# action_dict = dict()
+# for i in range(16):
+#     action_dict[i] = [i % 4, i // 4]
 
 
 class FourRoomMultiagent(FourRoom):
@@ -32,12 +53,17 @@ class FourRoomMultiagent(FourRoom):
     Four room environment suitable for two agents
     """
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
-                 render_mode='human', random_initial_position=True, video=False,
-                 video_path='root', max_num_agents=1):
+                 render_mode='rgb_array', random_initial_position=True, video=False,
+                 video_path='root', max_num_agents=2):
         super().__init__(maze=maze, shape_rewards=shape_rewards,
                  render_mode=render_mode, random_initial_position=random_initial_position, video=video,
                  video_path=video_path)
         self.max_num_agents = max_num_agents
+        self.action_space = spaces.Discrete(4 ** max_num_agents)
+        self.observation_space = spaces.Box(low=np.zeros(2*max_num_agents + len(self.shape_ids)),
+                                            high=len(self.maze) * np.ones(2*max_num_agents + len(self.shape_ids)),
+                                            dtype=np.int32)
+        self.action_dict = action_dict
 
     def random_position(self):
         for c in range(self.width):
@@ -98,6 +124,7 @@ class FourRoomMultiagent(FourRoom):
         reward = 0.
         self.step_count += 1
         collected = self.state[1]
+        actions = self.action_dict[str(actions)]
         for i in range(self.max_num_agents):
             if self.max_num_agents == 1:
                 (row, col) = self.state[0]
