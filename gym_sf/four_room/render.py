@@ -17,7 +17,7 @@ class Render:
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
 
-    def __init__(self, maze, render_mode='human'):
+    def __init__(self, maze, render_mode='rgb_array'):
         # Environment that will be showed
         self.maze_height, self.maze_width = maze.shape
         self.maze = maze
@@ -39,6 +39,7 @@ class Render:
         # Agent state
         self.agent_state = []
         self.canvas = pygame.Surface(self.size)
+        mode = self.check_display(render_mode)
         if self.render_mode == 'human':
             pygame.init()
             pygame.display.init()
@@ -69,6 +70,7 @@ class Render:
 
             self.agent_state = [state]
 
+        mode = self.check_display(mode)
         if mode == 'human':
             self.screen.blit(self.canvas, self.canvas.get_rect())
             pygame.event.pump()
@@ -118,6 +120,7 @@ class Render:
                     color = Render.BLUE
                     self.draw_shape(r, c, color, 'tri')
 
+        mode = self.check_display(mode)
         if mode == "human":
             assert self.screen is not None
             # The following line copies our drawings from `canvas` to the visible window
@@ -132,6 +135,20 @@ class Render:
             frame = np.transpose(np.array(pygame.surfarray.pixels3d(self.canvas)), axes=(1, 0, 2))
             frame = np.roll(frame[:, :], 1)
             return frame
+
+    def check_display(self, mode):
+        if self.render_mode == 'human' or mode == 'human':
+            try:
+                pygame.display.init()
+            except pygame.error:
+                self.render_mode = 'rgb_array'
+                mode = 'rgb_array'
+        
+        return mode
+
+# continue with your program logic here
+
+
 
     def draw_shape(self, r, c, color, shape):
         if shape == 'rect':
