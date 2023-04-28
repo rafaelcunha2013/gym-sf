@@ -1,2 +1,11 @@
 \.idea
 desktop.ini
+*.mp4
+*.gz
+*.egg-info
+*.pyc
+\build
+trial.py
+four-room2.jpeg
+four_room_goalEnv.py
+
