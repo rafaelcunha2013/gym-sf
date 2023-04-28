@@ -25,27 +25,27 @@ MAZE = np.array([
     [' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', '_', 'X', '3', ' ', ' ', ' ', ' ', '1']])
 REWARDS = dict(zip(['1', '2', '3'], list([1.0, 0.5, -1.0])))
-action_conversion = [('0', [0, 0]),
-                     ('1', [1, 0]),
-                     ('2', [2, 0]),
-                     ('3', [3, 0]),
-                     ('4', [0, 1]),
-                     ('5', [1, 1]),
-                     ('6', [2, 1]),
-                     ('7', [3, 1]),
-                     ('8', [0, 2]),
-                     ('9', [1, 2]),
-                     ('10', [2, 2]),
-                     ('11', [3, 2]),
-                     ('12', [0, 3]),
-                     ('13', [1, 3]),
-                     ('14', [2, 3]),
-                     ('15', [3, 3])]
-action_dict = dict(action_conversion)
+# action_conversion = [('0', [0, 0]),
+#                      ('1', [1, 0]),
+#                      ('2', [2, 0]),
+#                      ('3', [3, 0]),
+#                      ('4', [0, 1]),
+#                      ('5', [1, 1]),
+#                      ('6', [2, 1]),
+#                      ('7', [3, 1]),
+#                      ('8', [0, 2]),
+#                      ('9', [1, 2]),
+#                      ('10', [2, 2]),
+#                      ('11', [3, 2]),
+#                      ('12', [0, 3]),
+#                      ('13', [1, 3]),
+#                      ('14', [2, 3]),
+#                      ('15', [3, 3])]
+# action_dict = dict(action_conversion)
 
-# action_dict = dict()
-# for i in range(16):
-#     action_dict[i] = [i % 4, i // 4]
+action_dict = dict()
+for i in range(16):
+    action_dict[i] = [i % 4, i // 4]
 
 
 class FourRoomMultiagent(FourRoom):
@@ -54,7 +54,7 @@ class FourRoomMultiagent(FourRoom):
     """
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
                  render_mode='rgb_array', random_initial_position=True, video=False,
-                 video_path='root', max_num_agents=2):
+                 video_path='root', max_num_agents=2, initial_position=[(12,0)], given_initial_position=False):
         super().__init__(maze=maze, shape_rewards=shape_rewards,
                  render_mode=render_mode, random_initial_position=random_initial_position, video=video,
                  video_path=video_path)
@@ -64,12 +64,22 @@ class FourRoomMultiagent(FourRoom):
                                             high=len(self.maze) * np.ones(2*max_num_agents + len(self.shape_ids)),
                                             dtype=np.int32)
         self.action_dict = action_dict
+        self.given_initial_position = given_initial_position
+        self.init_position = initial_position
 
-    def random_position(self):
+    def erase_maze_position(self):
         for c in range(self.width):
             for r in range(self.height):
                 if self.env_maze[r, c] == '_':
-                    self.env_maze[r, c] = ' '
+                    self.env_maze[r, c] = ' '      
+
+    
+    def random_position(self):
+        self.erase_maze_position()
+        # for c in range(self.width):
+        #     for r in range(self.height):
+        #         if self.env_maze[r, c] == '_':
+        #             self.env_maze[r, c] = ' '
         self.initial = []
         n_r, n_c = np.shape(self.maze)
         for _ in range(self.max_num_agents):
@@ -80,6 +90,13 @@ class FourRoomMultiagent(FourRoom):
                     self.initial.append((r, c))
                     self.env_maze[r, c] = '_'
                     initial_position = True
+
+    def given_position(self):
+        self.erase_maze_position()
+        self.initial = self.init_position 
+        for r, c in self.init_position:      
+            self.env_maze[r, c] = '_'
+
 
     @staticmethod
     def state_to_array(state):
@@ -97,6 +114,8 @@ class FourRoomMultiagent(FourRoom):
         self.truncated = False
         self.terminated = False
         self.env_maze = copy.deepcopy(self.maze)
+        if self.given_initial_position:
+            self.given_position()
         if self.random_initial_position:
             self.random_position()
         if self.max_num_agents == 1:
@@ -207,3 +226,37 @@ class FourRoomMultiagent(FourRoom):
             return self.my_render.update(self.state[0], mode=self.render_mode)
         elif self.render_mode == 'rgb_array_list':
             self.frames.append(self.my_render.update(self.state[0], mode=self.render_mode))
+
+
+if __name__ == '__main__':
+
+    import os
+
+    # render_mode = "rgb_array_list" # "rgb_array" "rgb_array_list"
+    render_mode = 'human'
+    video_path = os.getcwd()
+    # num_agents = 2
+
+    num_agents = 2
+
+    env = gym.make("four-room-multiagent-v0", render_mode=render_mode, max_episode_steps=5000,
+                video=True, video_path=video_path, max_num_agents=num_agents, given_initial_position=False)
+    # env = gym.make("four-room-v0", render_mode='human', new_step_api=True, max_episode_steps=5000)
+    terminated = False
+    truncated = False
+    env.reset()
+
+    for _ in range(500):
+        action = env.action_space.sample()
+        for agent in range(num_agents):
+            if np.random.random() < 0.20:
+                if np.random.random() < 0.50:
+                    action = 2
+                else:
+                    action = 1
+        next_state, reward, terminated, truncated, _ = env.step(action)
+
+        if terminated or truncated:
+            env.render()
+            env.reset()
+    env.close()
