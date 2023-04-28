@@ -46,7 +46,7 @@ class FourRoom(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array", "rgb_array_list"], "render_fps": 4}
 
     def __init__(self, maze=MAZE, shape_rewards=REWARDS,
-                 render_mode='human', random_initial_position=True, video=False,
+                 render_mode='rgb_array', random_initial_position=True, video=False,
                  video_path='root'):
         """
         Creates a new instance of the FourRoom environment.
